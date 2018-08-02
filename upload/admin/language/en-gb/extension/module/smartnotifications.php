@@ -1,0 +1,30 @@
+<?php
+$_['heading_title']        = 'Zeki Bildirimler';
+$_['error_permission']     = 'Uyarı: Modülü değiştirme izniniz yok!';
+$_['text_success']         = 'Başarılı: Modülü değiştirdiniz!';
+$_['text_enabled']         = 'Etkin';
+$_['text_disabled']        = 'Devre Dışı';
+$_['button_cancel']        = 'İptal';
+$_['save_changes']         = 'Kaydet';
+$_['text_default']         = 'Varsayılan';
+$_['text_module']          = 'Modül';
+// Popups
+$_['entry_code']           = 'Eklenti Durumu: ';
+$_['entry_code_help']      = 'Eklentiyi aktifle veya devre dışı bırak';
+$_['text_show_on']         = 'Göster:';
+$_['text_window_load']     = 'Pencere yüklendiğinde';
+$_['text_page_load']       = 'Sayfa yüklendiğinde';
+$_['text_body_click']      = 'İçerik yüklendiğinde';
+$_['text_url']             = 'URL';
+$_['entry_content']        = 'İçerik:';
+$_['entry_size']           = 'Ölçü:';
+$_['entry_action_options'] = 'Aksiyon:';
+$_['entry_popup_options']  = 'Popup Ayarları:';
+$_['button_add_module']    = 'Yeni popup yara';
+$_['text_monday']          = 'Pazartesi';
+$_['text_tuesday']         = 'Salı';
+$_['text_wednesday']       = 'Çarşamba';
+$_['text_thursday']        = 'Perşembe';
+$_['text_friday']          = 'Cuma';
+$_['text_saturday']        = 'Cumartesş';
+$_['text_sunday']          = 'Pazar';

@@ -1,0 +1,30 @@
+.noty_message.pop-activity {
+	direction: rtl;
+	text-align: right;
+}
+
+.noty_message.pop-activity .icon,
+.noty_message.pop-activity .image {
+	float: right;
+}
+
+.noty_message.pop-activity .noty_text {
+	direction: rtl;
+	text-align: right;
+}
+
+.noty_message.pop-activity .icon + .noty_text,
+.noty_message.pop-activity .image + .noty_text {
+	margin-left: 0;
+	margin-right: 65px;	
+}
+
+.noty_message.pop-activity .noty_text h3 {
+	direction: rtl;
+	text-align: right;
+}
+
+.noty_message.pop-activity .noty_text p {
+	direction: rtl;
+	text-align: right;
+}

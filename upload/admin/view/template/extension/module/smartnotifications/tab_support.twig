@@ -1,0 +1,101 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="box-heading">
+                <h3><i class="fa fa-user"></i>&nbsp;Your License</h3>
+            </div>
+            {% if module_data.licensed_on is empty %}
+                <div class="licenseAlerts"></div>
+                <div class="licenseDiv"></div>
+                <table class="table notLicensedTable">
+                    <tr>
+                        <td colspan="2">
+                            <div class="form-group">
+                                <label for="moduleLicense">Please enter your product purchase license code</label>
+                                <input type="text" class="licenseCodeBox form-control" placeholder="License Code e.g. XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX" name="{{ module_name }}[license_code]" id="moduleLicense" value="{{ module_data.license_code ?? '' }}" />
+                            </div>
+                            <button type="button" class="btn btn-success btnActivateLicense"><i class="icon-ok"></i> Activate License</button>
+                            <div class="pull-right"><button type="button" class="btn btn-link small-link" onclick="window.open('http://isenselabs.com/users/purchases/')">
+                            Don't have a code? Get it from here.&nbsp;<i class="fa fa-external-link"></i></button></div>
+                        </td>
+                    </tr>
+                </table>
+                <script type="text/javascript">
+                var domainraw= location.protocol + '//' + location.host;
+                var domain= btoa(domainraw);
+                var timenow= {{ now }};
+                var MID = 'W3JWXA4LGE';
+                </script>
+                <script type="text/javascript" src="//isenselabs.com/external/validate/"></script>
+            {% endif %}
+            {% if module_data.licensed_on is not empty %}
+                <input name="cHRpbWl6YXRpb24ef4fe" type="hidden" value="{{ license_encoded }}" />
+                <input name="OaXRyb1BhY2sgLSBDb21" type="hidden" value="{{ module_data.licensed_on }}" />
+                <table class="table licensedTable">
+                    <tr>
+                        <td>License Holder</td>
+                        <td>{{ module_data.license.customerName }}</td>
+                    </tr>
+                    <tr>
+                        <td>Registered domains</td>
+                        <td>
+                            <ul class="registeredDomains">
+                                {% for domain in module_data.license.licenseDomainsUsed %}
+                                    <li><i class="fa fa-check"></i>&nbsp;{{ domain }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>License Expires on</td>
+                        <td>{{ expiration_date }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align:center;background-color:#EAF7D9;">VALID LICENSE ( <a href="http://isenselabs.com/users/purchases" target="_blank">manage</a> )</td>
+                    </tr>
+                </table>
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <div class="box-heading">
+                <h3><i class="fa fa-users"></i>&nbsp;Get Support</h3>
+            </div>
+            <div class="box-contents">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="thumbnail">
+                                <img alt="Community support" style="width: 300px;" src="view/image/{{ module_name }}/community.png">
+                                <div class="caption" style="text-align:center;padding-top:0px;">
+                                    <h3>Community</h3>
+                                    <p>Ask the community about your issue on the iSenseLabs forum. </p>
+                                    <p style="padding-top: 5px;"><a href="http://isenselabs.com/forum" target="_blank" class="btn btn-lg btn-default">Browse forums</a></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="thumbnail">
+                                <img data-src="holder.js/300x200" alt="Ticket support" style="width: 300px;" src="view/image/{{ module_name }}/tickets.png">
+                                <div class="caption" style="text-align:center;padding-top:0px;">
+                                    <h3>Tickets</h3>
+                                    <p>Want to communicate one-to-one with our tech people? Then open a support ticket.</p>
+                                    <p style="padding-top: 5px;"><a href="http://isenselabs.com/tickets/open/{{ request_ticket }}" target="_blank" class="btn btn-lg btn-default">Open a support ticket</a></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="thumbnail">
+                                <img alt="Pre-sale support" style="width: 300px;" src="view/image/{{ module_name }}/pre-sale.png">
+                                <div class="caption" style="text-align:center;padding-top:0px;">
+                                    <h3>Pre-sale</h3>
+                                    <p>Have a brilliant idea for your webstore? Our team of top-notch developers can make it real.</p>
+                                    <p style="padding-top: 5px;"><a href="https://isenselabs.com/pages/premium-services" target="_blank" class="btn btn-lg btn-default">Bump the sales</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

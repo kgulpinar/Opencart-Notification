@@ -1,0 +1,834 @@
+{% set popup_name = module_name ~ '[popup][' ~ popup.id ~ ']' %}
+{% set popup_data = module_data.popup[popup.id] ?? '' %}
+<div id="popup_{{ popup.id }}" class="tab-pane popups" style="width:99%">
+    <div class="row">
+        <div class="col-md-4">
+            <h5><span class="required">* </span><strong>Bildirim {{ popup.id }} durum</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Aktive et veya devre dışı bırak.</span>
+        </div>
+        <div class="col-md-3">
+            <select id="Checker" name="{{ popup_name }}[enabled]" class="form-control">
+                  <option value="yes" {{ ((popup_data.enabled is not empty) and (popup_data.enabled == 'yes')) ? 'selected' : '' }}>Enabled</option>
+                  <option value="no"  {{ ((popup_data.enabled is empty) or (popup_data.enabled == 'no')) ? 'selected' : '' }}>Disabled</option>
+            </select>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <h5><span class="required">* </span><strong>Bildirim ismi</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Bildirim ismi.</span>
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control" name="{{ popup_name }}[name]" value="{{ popup_data.name ?? ('Notification ' ~ popup.id) }}"/>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Showing method:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Yöntem seç </span>
+        </div>
+        <div class="col-md-3">
+            <select name="{{ popup_name }}[method]" class="methodTypeSelect form-control">
+                <option value="0" {{ ((popup_data.method is not empty) and (popup_data.method == '0')) ? 'selected' : ''}}>Ana Sayfada</option>
+                <option value="1" {{ ((popup_data.method is not empty) and (popup_data.method == '1')) ? 'selected' : ''}}>Tüm Sayfalar</option>
+                <option value="2" {{ ((popup_data.method is not empty) and (popup_data.method == '2')) ? 'selected' : ''}}>Belirli URL Adresleri</option>
+                <option value="4" {{ ((popup_data.method is not empty) and (popup_data.method == '4')) ? 'selected' : ''}}>Categories</option>
+                <option value="3" {{ ((popup_data.method is not empty) and (popup_data.method == '3')) ? 'selected' : ''}}>Kategorideki Ürünler</option>
+                <option value="5" {{ ((popup_data.method is not empty) and (popup_data.method == '5')) ? 'selected' : ''}}>Belirli Ürün Sayfaları</option>
+            </select>
+        </div>
+    </div>
+    <div class="row specURL">
+        <br />
+        <div class="col-md-4">
+            <h5><strong>URL Adresleri:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;In this box you can type in the URLs you wish the popup to show up, separated by a new line</span>
+        </div>
+        <div class="col-md-8">
+            <textarea rows="5" placeholder="http://" type="text" class="form-control" name="{{ popup_name }}[url]">{{ popup_data.url ?? ''}}</textarea>
+        </div>
+    </div>
+    <div class="row excludeURL">
+        <br />
+        <div class="col-md-4">
+            <h5><strong>Hariç Tutulan Adresler:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;In this box you can type in the URLs you wish to exclude, separated by a new line</span>
+        </div>
+        <div class="col-md-8">
+            <textarea rows="5" placeholder="http://" type="text" class="form-control" name="{{ popup_name }}[excluded_urls]">{{ popup_data.excluded_urls ?? ''}}</textarea>
+        </div>
+    </div>
+    <div class="row product-categories">
+        <br />
+        <div class="col-md-4">
+            <h5><strong>Ürün kategorilerini seçin:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Choose the product categories where you want the notification to show (autocomplete)</span>
+        </div>
+        <div class="col-md-8">
+          <input type="text" name="{{ popup_name }}[product_category]" value="" placeholder="Categories" id="input-product-category" class="form-control" />
+            <div id="product-category_{{ popup.id }}" class="well well-sm" style="height: 150px; overflow: auto;">
+              {% if popup_data.product_category is not empty %}
+                   {% for product_category in popup_data.product_category %}
+                        <div id="product-category_{{ popup.id }}_{{ product_category.category_id }}"><i class="fa fa-minus-circle"></i> {{ product_category.name }}
+                            <input type="hidden" name="{{ popup_name }}[product_category][]" value="{{ product_category.category_id }}" />
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="row categories">
+        <br />
+        <div class="col-md-4">
+            <h5><strong>Kategorileri seçin:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Choose the categories where you want the notification to show (autocomplete)</span>
+        </div>
+        <div class="col-md-8">
+            <input type="text" name="{{ popup_name }}[category]" value="" placeholder="Categories" id="input-category" class="form-control" />
+            <div id="category_{{ popup.id }}" class="well well-sm" style="height: 150px; overflow: auto;">
+                {% if popup_data.category is not empty %}
+                    {% for category in popup_data.category %}
+                        <div id="category_{{ popup.id }}_{{ category.category_id }}"><i class="fa fa-minus-circle"></i> {{ category.name }}
+                            <input type="hidden" name="{{ popup_name }}[category][]" value="{{ category.category_id }}" />
+                        </div>
+                    {% endfor %}
+                {% endif %}
+          </div>
+        </div>
+    </div>
+    <div class="row snproducts">
+        <br />
+        <div class="col-md-4">
+            <h5><strong>Ürünleri Seçin:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Choose the products where you want the notification to show (autocomplete)</span>
+        </div>
+        <div class="col-md-8">
+            <input type="text" name="{{ popup_name }}[products]" value="" placeholder="Products" id="input-products" class="form-control" />
+            <div id="products_{{ popup.id }}" class="well well-sm" style="height: 150px; overflow: auto;">
+                {% if popup_data.products is not empty %}
+                    {% for product in popup_data.products %}
+                        <div id="product_{{ popup.id }}_{{ product.product_id }}"><i class="fa fa-minus-circle"></i> {{ product.name }}
+                            <input type="hidden" name="{{ popup_name }}[products][]" value="{{ product.product_id }}" />
+                        </div>
+                    {% endfor %}
+                {% endif %}
+          </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Pozisyon:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Set position for the notification</span>
+        </div>
+        <div class="col-md-3">
+            <select name="{{ popup_name }}[position]" class="eventSelect form-control">
+                <option value="top" {{ ((popup_data.position is not empty) and (popup_data.position == 'top')) ? 'selected' : '' }}>Üst</option>
+                <option value="topLeft" {{ ((popup_data.position is not empty) and (popup_data.position == 'topLeft')) ? 'selected' : '' }}>Sol Üst</option>
+                <option value="topCenter" {{ ((popup_data.position is not empty) and (popup_data.position == 'topCenter')) ? 'selected' : '' }}>Üst Orta</option>
+                <option value="topRight" {{ ((popup_data.position is empty) or (popup_data.position == 'topRight')) ? 'selected' : '' }}>Sağ Üst</option>
+                <option value="center" {{ ((popup_data.position is not empty) and (popup_data.position == 'center')) ? 'selected' : '' }}>Merkezde</option>
+                <option value="centerLeft" {{ ((popup_data.position is not empty) and (popup_data.position == 'centerLeft')) ? 'selected' : '' }}>Sol Merkezde</option>
+                <option value="centerRight" {{ ((popup_data.position is not empty) and (popup_data.position == 'centerRight')) ? 'selected' : '' }}>Sağ Merkezde</option>
+                <option value="bottom" {{ ((popup_data.position is not empty) and (popup_data.position == 'bottom')) ? 'selected' : '' }}>Altta</option>
+                <option value="bottomLeft" {{ ((popup_data.position is not empty) and (popup_data.position == 'bottomLeft')) ? 'selected' : '' }}>Sol Alt</option>
+                <option value="bottomCenter" {{ ((popup_data.position is not empty) and (popup_data.position == 'bottomCenter')) ? 'selected' : '' }}>Orta Alt</option>
+                <option value="bottomRight" {{ ((popup_data.position is not empty) and (popup_data.position == 'bottomRight')) ? 'selected' : '' }}>Sağ Alt</option>
+            </select>
+        </div>
+    </div>
+    <br />
+     <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Göster:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Set the event trigger when the notification will show</span>
+        </div>
+        <div class="col-md-3">
+            <select name="{{ popup_name }}[event]" class="eventSelect form-control">
+                <option value="0" {{ ((popup_data.event is not empty) and (popup_data.event == '0')) ? 'selected' : '' }}>Pencere yüklendiğinde</option>
+                <option value="1" {{ ((popup_data.event is not empty) and (popup_data.event == '1')) ? 'selected' : '' }}>Sayfa yüklendiğinde</option>
+                <option value="2" {{ ((popup_data.event is not empty) and (popup_data.event == '2')) ? 'selected' : '' }}>İçerik yüklendiğinde</option>
+            </select>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <!-- Show on Desktop-->
+        <div class="col-md-4">
+            <h5><strong>Masaüstü Bilgisayarda Göster:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Enable or disable the popup for desktop devices.</span>
+          </div>
+          <div class="col-md-3">
+            <select name="{{ popup_name }}[show_on_desktop]" class="form-control">
+                <option value="1" {{ ((popup_data.show_on_desktop is not defined) or (popup_data.show_on_desktop == '1')) ? 'selected' : '' }}>Yes</option>
+                <option value="0" {{ ((popup_data.show_on_desktop is defined) and (popup_data.show_on_desktop == '0')) ? 'selected' : '' }}>No</option>
+            </select>
+          </div>
+    </div>
+    </br>
+    <div class="row">
+        <!-- Show on Mobile-->
+        <div class="col-md-4">
+            <h5><strong>Mobilde Göster:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Enable or disable the popup for mobile devices.</span>
+        </div>
+        <div class="col-md-3">
+            <select name="{{ popup_name }}[show_on_mobile]" class="form-control">
+                <option value="1" {{ ((popup_data.show_on_mobile is not defined) or (popup_data.show_on_mobile == '1')) ? 'selected' : '' }}>Yes</option>
+                <option value="0" {{ ((popup_data.show_on_mobile is defined) and (popup_data.show_on_mobile == '0')) ? 'selected' : '' }}>No</option>
+            </select>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Tekrarla:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Set the display frequency</span>
+        </div>
+        <div class="col-md-3">
+            <select name="{{ popup_name }}[repeat]" class="form-control repeatSelect">
+                <option value="0" {{ ((popup_data.repeat is not empty) and (popup_data.repeat == '0')) ? 'selected' : '' }}>Herzaman Göster</option>
+                <option value="1" {{ ((popup_data.repeat is not empty) and (popup_data.repeat == '1')) ? 'selected' : '' }}>Her kullanıcıya bir kere</option>
+                <option value="2" {{ ((popup_data.repeat is not empty) and (popup_data.repeat == '2')) ? 'selected' : '' }}>X gün sonra tekrar göster</option>
+            </select>
+            <div class="daysPicker">
+            <br/>
+                <div class="input-group">
+                    <input type="number" min="1" class="form-control" name="{{ popup_name }}[days]" value="{{ popup_data.days ?? '1' }}" />
+                    <span class="input-group-addon">gün</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Haftanın günleri:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Bildirimin gösterilmesini istediğinizde, haftanın belirli günlerini (Pzt-Pazar) seçin.</span>
+        </div>
+        <div class="col-md-2">
+            <select name="{{ popup_name }}[days_of_week_status]" class="form-control daysOfWeekSelect">
+                <option value="0" {{ ((popup_data.days_of_week_status is not empty) and (popup_data.days_of_week_status == '0')) ? 'selected' : '' }}>Devre Dışı</option>
+                <option value="1" {{ ((popup_data.days_of_week_status is not empty) and (popup_data.days_of_week_status == '1')) ? 'selected' : '' }}>Etkin</option>
+            </select>
+            <div class="daysOfWeek">
+                {% for key,day_of_week in days_of_week %}
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="{{ popup_name }}[selected_days_of_week][{{ key }}]" {{ ((popup_data.selected_days_of_week[key] is defined) and (popup_data.selected_days_of_week[key] == 'on')) ? 'checked' : '' }} /> {{ day_of_week }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Gösterilecek Saatler:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Set the hours when you want the notification to show</span>
+        </div>
+        <div class="col-md-2">
+            <select name="{{ popup_name }}[time_interval]" class="form-control timeIntervalSelect">
+                    <option value="0" {{ ((popup_data.time_interval is not empty) and (popup_data.time_interval == '0')) ? 'selected' : ''}}>Disabled</option>
+                    <option value="1" {{ ((popup_data.time_interval is not empty) and (popup_data.time_interval == '1')) ? 'selected' : ''}}>Enabled</option>
+            </select>
+            <div class="timeInterval">
+                <br/>
+                Start time:
+                    <div class='input-group date' id='startTime'>
+                        <input type='text' class="form-control" name="{{ popup_name }}[start_time]" value="{{ popup_data.start_time ?? '00:00'}}" />
+                        <span class="input-group-addon"><span class="fa fa-clock-o"></span>
+                        </span>
+                    </div>
+                <br/>
+                End time: 
+                    <div class='input-group date' id='endTime'>
+                        <input type='text' class="form-control" name="{{ popup_name }}[end_time]" value="{{ popup_data.end_time ?? '00:00' }}" />
+                        <span class="input-group-addon"><span class="fa fa-clock-o"></span>
+                        </span>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Erteleme:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;X Saniye sonra gösterilecek erteleme</span>
+        </div>
+        <div class="col-md-2">
+            <div class="input-group">
+                <input type="number" min="0" class="form-control" name="{{ popup_name }}[delay]" value="{{ popup_data.delay ?? '0'}}" />
+                <span class="input-group-addon">secs</span>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Zaman aşımı:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;How long the notification to stay visible. Set 0 for sticky notification.</span>
+        </div>
+        <div class="col-md-2">
+            <div class="input-group">
+                <input type="number" min="0" class="form-control" name="{{ popup_name }}[timeout]" value="{{ popup_data.timeout ?? '0' }}" />
+                <span class="input-group-addon">secs</span>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Tasarım:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Bildirim tasarımını seçebilirsiniz.</span>
+        </div>
+        <div class="col-md-3">
+            <select name="{{ popup_name }}[template]" class="form-control" id="template-customization_{{popup.id }}">
+                <option value="default" {{ ((popup_data.template is not empty) and (popup_data.template == 'default')) ? 'selected' : '' }}>Default</option>
+                <option value="custom-style" {{ ((popup_data.template is not empty) and (popup_data.template == 'custom-style')) ? 'selected' : '' }}>Custom Style</option>
+                <option value="default-green" {{ ((popup_data.template is not empty) and (popup_data.template == 'default-green')) ? 'selected' : '' }}>Default Green</option>
+                <option value="default-yellow" {{ ((popup_data.template is not empty) and (popup_data.template == 'default-yellow')) ? 'selected' : '' }}>Default Yellow</option>
+                <option value="default-orange" {{ ((popup_data.template is not empty) and (popup_data.template == 'default-orange')) ? 'selected' : '' }}>Default Orange</option>
+                <option value="default-red" {{ ((popup_data.template is not empty) and (popup_data.template == 'default-red')) ? 'selected' : '' }}>Default Red</option>
+                <option value="lime-green" {{ ((popup_data.template is not empty) and (popup_data.template == 'lime-green')) ? 'selected' : '' }}>Lime Green</option>
+                <option value="light-green" {{ ((popup_data.template is not empty) and (popup_data.template == 'light-green')) ? 'selected' : '' }}>Light Green</option>
+                <option value="light-yellow" {{ ((popup_data.template is not empty) and (popup_data.template == 'light-yellow')) ? 'selected' : '' }}>Light Yellow</option>
+                <option value="orange" {{ ((popup_data.template is not empty) and (popup_data.template == 'orange')) ? 'selected' : '' }}>Orange</option>
+                <option value="dark-orange" {{ ((popup_data.template is not empty) and (popup_data.template == 'dark-orange')) ? 'selected' : '' }}>Dark Orange</option>
+            </select>
+        </div>
+    </div>
+    <br / >
+    <div id="custom-style-properties-{{ popup.id }}" {{ ((popup_data.template is empty) or (popup_data.template != 'custom-style')) ? "style='display:none'" : ''}}>
+        <div class="row">
+            <div class="col-md-4">
+                <h5><strong>Tasarım Genişliği:</strong></h5>
+                <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Define the width for the popup window</span>
+            </div>
+            <div class="col-md-2">
+                <div class="input-group">
+                    <input type="number" min="0" class="form-control" name="{{ popup_name }}[width]" value="{{ popup_data.width ?? '310'}}" />
+                    <span class="input-group-addon">px</span>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-4">
+                <h5><strong>Tasarım Yüksekliği:</strong></h5>
+                <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Define the height for the popup window</span>
+            </div>
+            <div class="col-md-2">
+                <div class="input-group">
+                    <input type="number" min="0" class="form-control" name="{{ popup_name }}[height]" value="{{ popup_data.height ?? '100'}}" />
+                    <span class="input-group-addon">px</span>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-4">
+                <h5><strong>Arkaplan Rengi:</strong></h5>
+                <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Enter the HEX code of the wanted color</span>
+            </div>
+            <div class="col-md-2">
+                <div class="input-group">
+                    <div id="background_color_hex" class="input-group colorpicker-component">
+                        <input type="text" class="form-control" name="{{ popup_name }}[hex_code_background]" value="{{ popup_data.hex_code_background ?? 'ffffff'}}"><span class="input-group-addon"><i></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-4">
+                <h5><strong>Çerçeve Sınır Rengi:</strong></h5>
+                <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Enter the HEX code for the border color</span>
+            </div>
+            <div class="col-md-2">
+                <div class="input-group">
+                    <div id="border_color_hex" class="input-group colorpicker-component">
+                        <input type="text" class="form-control" name="{{ popup_name }}[hex_code_border]" value="{{ popup_data.hex_code_border ?? 'dddddd'}}"><span class="input-group-addon"><i></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+           <div class="col-md-4">
+               <h5><strong>Başlık Rengi:</strong></h5>
+               <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Enter the HEX code for the title color</span>
+           </div>
+           <div class="col-md-2">
+               <div class="input-group">
+                    <div id="title_color_hex" class="input-group colorpicker-component">
+                        <input type="text" class="form-control" name="{{ popup_name }}[hex_code_title]" value="{{ popup_data.hex_code_border ?? '000000'}}"><span class="input-group-addon"><i></i></span>
+                    </div>
+                </div>
+           </div>
+        </div>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Ikon Göster:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Choose whether to show or hide the icon.</span>           
+        </div>
+        <div class="col-md-3">
+            <select id="show_icons_{{ popup.id }}" name="{{ popup_name }}[show_icon]" class="form-control">
+                    <option value="0" {{ ((popup_data.show_icon is not empty) and (popup_data.show_icon == '0')) ? 'selected' : '' }}>Disabled</option>
+                    <option value="1" {{ ((popup_data.show_icon is not empty) and (popup_data.show_icon == '1')) ? 'selected' : '' }}>Enabled</option>
+            </select>
+        </div>
+    </div>
+    <br / >
+    <div id="icon_type_{{ popup.id }}" class="row icon_options_{{ popup.id }}">
+        <div class="col-md-4">
+            <h5><strong>Ikon Tipi:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Choose the type of icon you want to use.</span>           
+        </div>
+        <div class="col-md-3">
+            <select id="choose_icon_type_{{ popup.id }}" name="{{ popup_name }}[icon_type]" class="form-control">
+                    <option value="p" {{ ((popup_data.icon_type is not empty) and (popup_data.icon_type == 'p')) ? 'selected' : ''}}>Use predefined vector image</option>
+                    <option value="u" {{ ((popup_data.icon_type is not empty) and (popup_data.icon_type == 'u')) ? 'selected' : ''}}>Use custom image</option>
+            </select>
+        </div>
+    </div>
+    <br />
+    <div id="preset_icon_{{ popup.id }}" class="row icon_options_{{ popup.id }}">
+        <div class="col-md-4">
+            <h5><strong>İkon:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Choose from predefined vector images.</span>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="input-group">
+                    <input data-placement="bottomRight" class="form-control icp icon-picker" name="{{ popup_name }}[icon]" value="{{ popup_data.icon ?? 'fa-archive' }}" type="text" />
+                    <span class="input-group-addon"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div id="custom_icon_{{ popup.id }}" class="row ">
+        <div class="col-md-4">
+            <h5><strong>Özel İkon:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Upload your custom icon image.</span>
+        </div>
+        <div class="col-md-3">
+            <div class="input-group">
+                <a href="" id="thumb-logo_{{ popup.id }}" data-toggle="image" class="img-thumbnail"><img clas="uploaded_icon" src="{{ popup_data.icon_image_thumb ?? '../image/no_image.png'}}" alt="uploaded_icon" title="" data-placeholder="" width="50" height="50" /></a>
+              <input type="hidden" name="{{ popup_name }}[icon_image]" value="{{ popup_data.icon_image ?? ''}}" id="input-logo_{{ popup.id }}" />
+            </div>
+        </div>
+    </div>
+   <br />
+    <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Açılış Animasyonu:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Choose animation for notification entrance</span>
+        </div>
+        <div class="col-md-2">
+            <select name="{{ popup_name }}[open_animation]" class="form-control">
+                <option value="bounceIn" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'bounceIn')) ? 'selected' : ''}}>bounceIn</option>
+                <option value="bounceInDown" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'bounceDown')) ? 'selected' : ''}}>bounceInDown</option>
+                <option value="bounceInLeft" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'bounceInLeft')) ? 'selected' : ''}}>bounceInLeft</option>
+                <option value="bounceInRight" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'bounceInRight')) ? 'selected' : ''}}>bounceInRight</option>
+                <option value="bounceInUp" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'bounceInUp')) ? 'selected' : ''}}>bounceInUp</option>
+                <option value="fadeIn" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'fadeIn')) ? 'selected' : ''}}>fadeIn</option>
+                <option value="fadeInDown" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'fadeInDown')) ? 'selected' : ''}}>fadeInDown</option>
+                <option value="fadeInDownBig" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'fadeInDownBig')) ? 'selected' : ''}}>fadeInDownBig</option>
+                <option value="fadeInLeft" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'fadeInLeft')) ? 'selected' : ''}}>fadeInLeft</option>
+                <option value="fadeInLeftBig" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'fadeInLeftBig')) ? 'selected' : ''}}>fadeInLeftBig</option>
+                <option value="fadeInRight" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'fadeInRight')) ? 'selected' : ''}}>fadeInRight</option>
+                <option value="fadeInRightBig" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'fadeInRightBig')) ? 'selected' : ''}}>fadeInRightBig</option>
+                <option value="fadeInUp" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'fadeInUp')) ? 'selected' : ''}}>fadeInUp</option>
+                <option value="fadeInUpBig" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'fadeInBig')) ? 'selected' : ''}}>fadeInUpBig</option>
+                <option value="rotateIn" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'rotateIn')) ? 'selected' : ''}}>rotateIn</option>
+                <option value="rotateInDownLeft" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'rotateInDownLeft')) ? 'selected' : ''}}>rotateInDownLeft</option>
+                <option value="rotateInDownRight" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'rotateInDownRight')) ? 'selected' : ''}}>rotateInDownRight</option>
+                <option value="rotateInUpLeft" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'rotateInUpLeft')) ? 'selected' : ''}}>rotateInUpLeft</option>
+                <option value="rotateInUpRight" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'rotateInUpRight')) ? 'selected' : ''}}>rotateInUpRight</option>
+                <option value="zoomIn" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'zoomIn')) ? 'selected' : ''}}>zoomIn</option>
+                <option value="zoomInDown" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'zoomInDown')) ? 'selected' : ''}}>zoomInDown</option>
+                <option value="zoomInLeft" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'zoomInLeft')) ? 'selected' : ''}}>zoomInLeft</option>
+                <option value="zoomInRight" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'zoomInRight')) ? 'selected' : ''}}>zoomInRight</option>
+                <option value="zoomInUp" {{ ((popup_data.open_animation is not empty) and (popup_data.open_animation == 'zoomInUp')) ? 'selected' : ''}}>zoomInUp</option>
+            </select>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Kapanış Animasyonu:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Choose animation for notification exit</span>
+        </div>
+        <div class="col-md-2">
+            <select name="{{ popup_name }}[close_animation]" class="form-control">
+                <option value="bounceOut" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'bounceOut')) ? 'selected' : ''}}>bounceOut</option>
+                <option value="bounceOutDown" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'bounceOutDown')) ? 'selected' : ''}}>bounceInDown</option>
+                <option value="bounceOutLeft" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'bounceOutLeft')) ? 'selected' : ''}}>bounceOutLeft</option>
+                <option value="bounceOutRight" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'bounceOutRight')) ? 'selected' : ''}}>bounceOutRight</option>
+                <option value="bounceOutUp" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'bounceOutUp')) ? 'selected' : ''}}>bounceOutUp</option>
+                <option value="fadeOut" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'fadeOut')) ? 'selected' : ''}}>fadeOut</option>
+                <option value="fadeOutDown" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'fadeOutDown')) ? 'selected' : ''}}>fadeOutDown</option>
+                <option value="fadeOutDownBig" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'fadeOutDownBig')) ? 'selected' : ''}}>fadeOutDownBig</option>
+                <option value="fadeOutLeft" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'fadeOutLeft')) ? 'selected' : ''}}>fadeOutLeft</option>
+                <option value="fadeOutLeftBig" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'fadeOutLeftBig')) ? 'selected' : ''}}>fadeOutLeftBig</option>
+                <option value="fadeOutRight" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'fadeOutRight')) ? 'selected' : ''}}>fadeOutRight</option>
+                <option value="fadeOutRightBig" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'fadeOutRightBig')) ? 'selected' : ''}}>fadeOutRightBig</option>
+                <option value="fadeOutUp" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'fadeOutUp')) ? 'selected' : ''}}>fadeOutUp</option>
+                <option value="fadeOutUpBig" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'fadeOutUpBig')) ? 'selected' : ''}}>fadeOutUpBig</option>
+                <option value="rotateOut" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'rotateOut')) ? 'selected' : ''}}>rotateOut</option>
+                <option value="rotateOutDownLeft" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'rotateOutDownLeft')) ? 'selected' : ''}}>rotateOutDownLeft</option>
+                <option value="rotateOutDownRight" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'rotateOutDownRight')) ? 'selected' : ''}}>rotateOutDownRight</option>
+                <option value="rotateOutUpLeft" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'rotateOutUpLeft')) ? 'selected' : ''}}>rotateOutUpLeft</option>
+                <option value="rotateOutUpRight" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'rotateOutUpRight')) ? 'selected' : ''}}>rotateOutUpRight</option>
+                <option value="zoomOut" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'zoomOut')) ? 'selected' : ''}}>zoomOut</option>
+                <option value="zoomOutDown" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'zoomOutDown')) ? 'selected' : ''}}>zoomOutDown</option>
+                <option value="zoomOutLeft" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'zoomOutLeft')) ? 'selected' : ''}}>zoomOutLeft</option>
+                <option value="zoomOutRight" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'zoomOutRight')) ? 'selected' : ''}}>zoomOutRight</option>
+                <option value="zoomOutUp" {{ ((popup_data.close_animation is not empty) and (popup_data.close_animation == 'zoomOutUp')) ? 'selected' : ''}}>zoomOutUp</option>
+            </select>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <h5><strong>Rastgale Değer:</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Use %random_value% where you want a random number to appear.</span>
+        </div>
+        <h1>{{ popup_data.random_value }}</h1>
+        <div class="col-md-3">
+            <input name="{{ popup_name }}[random_range]" type="text" class="span2 random_slider" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="{{ popup_data.random_range ? '[' ~ popup_data.random_range ~ ']' : '[0,100]'}}"/>
+        </div>
+    </div>
+    <br />
+     <div class="row">
+        <div class="col-md-4">
+            <h5><span class="required">* </span><strong>Müşteri Grupları</strong></h5>
+            <span class="help"><i class="fa fa-info-circle"></i>&nbsp;Choose the customer group you want to apply the notification for. At least one customer group should be selected!</span>
+        </div>
+        <div class="col-md-3">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="{{ popup_name }}[customer_groups][0]" {{ (popup_data.customer_groups[0] == 'on') ? 'checked' : '' }} /> Guest
+                </label>
+            </div>
+            {% for customer_group in customer_groups %} 
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="{{ popup_name }}[customer_groups][{{ customer_group.customer_group_id }}]" {{ (popup_data.customer_groups[customer_group.customer_group_id] == 'on') ? 'checked' : '' }}/> {{ customer_group.name }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <br/>
+    <ul class="nav nav-tabs popup_tabs">
+        <h5>Çoklu Dil Seçeneği Ayarları:</h5>
+        {% set i = 0 %}
+        {% for language in languages %}
+            <li {{ (i == 0) ? 'active' : '' }}><a href="#tab-{{ popup.id }}-{{ language.language_id }}" data-toggle="tab"><img src="{{ language.flag_url }}"/> {{ language.name }}</a></li>
+            {% set i = i + 1 %}
+        {% endfor %}
+    </ul>
+    <div class="tab-content">
+        {% set i = 0 %}
+        {% for language in languages %}
+            <div id="tab-{{ popup.id }}-{{ language.language_id }}" language-id="{{ language.language_id }}" class="row-fluid tab-pane language {{ (i == 0) ? 'active' : ''}}">
+                <div class="row">
+                    <div class="col-md-2">
+                        <h5><strong>Title:</strong></h5>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="title" class="form-control" placeholder="Title" name="{{ popup_name }}[title][{{ language.language_id }}]" value="{{ popup_data.title[language.language_id] ?? '' }}" />
+                    </div>
+                    <div>
+                        <button id="livePreview_{{ popup.id }}_{{ language.language_id }}" data-popup-id="{{ popup.id }}" class="btn btn-info" onclick="reviewPopup(event, {{ popup.id }}, {{ language.language_id }})">Preview</button>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-2">
+                        <h5><strong>Description:</strong></h5>
+                    </div>
+                    <div class="col-md-6">
+                        <textarea name="{{ popup_name }}[description][{{ language.language_id }}]"  class="form-control" id="description_{{ language.language_id }}_{{ popup.id }}">
+                            {% if popup_data.description[language.language_id] %}
+                                {{ popup_data.description[language.language_id] }}
+                            {% endif %}
+                        </textarea>
+                        
+                    </div>
+                </div>
+            </div>
+            {% set i = i + 1 %}
+        {% endfor %}
+    </div>
+    <script>
+        $(function() {
+            selectorsForPopups(this);
+            $(document).ready(function() {
+                $('input[name="{{ popup_name }}[random_range]"]').bootstrapSlider({tooltip_position:'bottom'});
+            });
+        });
+
+        // Category
+        $('input[name="{{ popup_name }}[product_category]"], input[name="{{ popup_name }}[category]"]').autocomplete({
+            'source': function(request, response) {
+                $.ajax({
+                    url: 'index.php?route=catalog/category/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+                    dataType: 'json',           
+                    success: function(json) {
+                        response($.map(json, function(item) {
+                            return {
+                                label: item['name'],
+                                value: item['category_id']
+                            }
+                        }));
+                    }
+                });
+            },
+            'select': function(item) {
+                var method = 'product-category';
+
+                if ($(this).attr('id').indexOf('input-category') > -1) {
+                    method = 'category';
+                }
+
+                $(this).val('');
+                $('#' + method +'_{{ popup.id }}_' + item['value']).remove();
+                $('#' + method +'_{{ popup.id }}').append('<div id="' + method + '_{{ popup.id }}_' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="{{ popup_name }}[' + method.replace('-','_') + '][]" value="' + item['value'] + '" /></div>');  
+            }
+        });
+
+        $('#product-category_{{ popup.id }},#category_{{ popup.id }}').delegate('.fa-minus-circle', 'click', function() {
+            $(this).parent().remove();
+        });
+
+        // Products
+        $('input[name="{{ popup_name }}[products]"]').autocomplete({
+            'source': function(request, response) {
+                $.ajax({
+                    url: 'index.php?route=catalog/product/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+                    dataType: 'json',
+                    success: function(json) {
+                        response($.map(json, function(item) {
+                            return {
+                                label: item['name'],
+                                value: item['product_id']
+                            }
+                        }));
+                    }
+                });
+            },
+            'select': function(item) {
+                var method = 'products';
+
+                $(this).val('');
+                $('#' + method +'_{{ popup.id }}_' + item['value']).remove();
+                $('#' + method +'_{{ popup.id }}').append('<div id="' + method + '_{{ popup.id }}_' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="{{ popup_name }}[' + method.replace('-','_') + '][]" value="' + item['value'] + '" /></div>');
+            }
+        });
+        $('#products_{{ popup.id }}').delegate('.fa-minus-circle', 'click', function() {
+            $(this).parent().remove();
+        });
+    </script>
+</div>
+<script type="text/javascript"><!--
+    {% for language in languages %}
+        $("#description_{{ language.language_id }}_{{ popup.id }}").summernote({height: 300});
+    {% endfor %}
+</script>
+<script>
+$(function() {
+    var $typeSelector = $("#show_icons_{{ popup.id }}");
+    var $typeOfIcons = $("#choose_icon_type_{{ popup.id }}");
+    var $toggleArea = $(".icon_options_{{ popup.id }}");
+    var $customIcon = $("#custom_icon_{{ popup.id }}");
+    
+    var $templateCustomization = $("#template-customization_{{ popup.id }}");
+    var $customStyle = $('#custom-style-properties-{{ popup.id }}');
+
+    $templateCustomization.on('change', function() {
+        if ($templateCustomization.val() == "custom-style") {
+            $customStyle.show(300);
+        } else {
+            $customStyle.hide(300);
+        }
+    });
+
+    if ($typeSelector.val() === '1') {
+        $toggleArea.show();         
+    } else {
+        $toggleArea.hide();
+        $customIcon.hide(); 
+    }
+
+    $typeSelector.change(function(){
+        if ($typeSelector.val() === '1') {
+            $toggleArea.show(300); 
+            
+        } else {
+            $toggleArea.hide(300); 
+            $customIcon.hide(300); 
+        }
+    });
+});
+
+$(function() {
+    var $enableIcons = $("#show_icons_{{ popup.id }}");
+    var $typeOfIcons = $("#choose_icon_type_{{ popup.id }}");
+    var $toggleArea = $("#custom_icon_{{ popup.id }}");
+
+    if ($enableIcons.val() === '1' && $typeOfIcons.val() === 'u') {
+        $toggleArea.show(); 
+    } else {
+        $toggleArea.hide(); 
+    }
+
+    $typeOfIcons.change(function(){
+        if ($typeOfIcons.val() === 'u' && $enableIcons.val() === '1' ) {
+            $toggleArea.show(300); 
+        } else {
+            $toggleArea.hide(300); 
+        }
+    });
+});
+</script>
+<script type="text/javascript">
+    // set the bootstrap color picker for all elements with an Id that ends with `_color_hex`
+    $(function() {
+        $('div[id$="_color_hex"').colorpicker({
+            customClass: 'colorpicker-2x',
+            sliders: {
+                saturation: {
+                    maxLeft: 200,
+                    maxTop: 200
+                },
+                hue: {
+                    maxTop: 200
+                },
+                alpha: {
+                    maxTop: 200
+                }
+            }
+        });
+    });
+
+    function reviewPopup(e, popup_id, language_id) {
+        console.log(popup_id, language_id);
+        e.preventDefault();
+        e.stopPropagation();
+
+        $.noty.closeAll(); 
+        var popup_container = $('#popup_' + popup_id);
+
+        var position = popup_container.find('select[name*="position"] option:selected').val();
+        var timeout = popup_container.find('input[name*="timeout"]').val();
+        var template = popup_container.find('select[name*="template"] option:selected').val();
+        var icon = popup_container.find('input[name*="icon"]').val();
+        var open_animation = popup_container.find('select[name*="open_animation"] option:selected').val();
+        var close_animation = popup_container.find('select[name*="close_animation"] option:selected').val();
+        var title = $('input[name="{{ popup_name }}[title][' + language_id + ']"]').val(); // get the title of the popup
+        var description = $('textarea[name="{{ popup_name }}[description][' + language_id + ']"]').val();
+        var showIcon = popup_container.find('select[name*="show_icon"] option:selected').val();
+        var typeOfIcon = popup_container.find('select[name*="icon_type"] option:selected').val();
+        var image = popup_container.find('img[alt="uploaded_icon"]').attr('src');
+        var widthPopup = popup_container.find('input[name*="width"]').val();
+        var heightPopup = popup_container.find('input[name*="height"]').val();
+        var backgroundColor = popup_container.find('input[name="{{ popup_name }}[hex_code_background]"]').val();
+        var borderColor = popup_container.find('input[name="{{ popup_name }}[hex_code_border]"]').val();
+        var titleColor = popup_container.find('input[name="{{ popup_name }}[hex_code_title]"]').val();
+
+        showSmartNotificationsPopup(title, description, template, timeout, icon,  position, open_animation, close_animation, showIcon,typeOfIcon,image, widthPopup, heightPopup, backgroundColor, borderColor, titleColor);    
+    }
+
+    $("select[name='{{ popup_name }}[open_animation]'], select[name='{{ popup_name }}[close_animation]']").on('change', function() {
+        $.noty.closeAll(); 
+        $("#livePreview_{{ popup.id }}_{{ language.language_id }}").trigger('click');
+    });
+
+    var showSmartNotificationsPopup = function (title, description, template, timeout, icon, position,open_animation,close_animation, showIcon, typeOfIcon,image, widthPopup, heightPopup, backgroundColor, borderColor, titleColor) {
+        // Get the range of the random number, split them by comma and parse them to int
+        var range = ($('input[name="{{ popup_name }}[random_range]"').val()).split(',').map(function(number){
+            return parseInt(number, 10);
+        });
+        // Returns a random int number between min and max
+        var random = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
+
+        var description = description.replace('%random_value%', random); // Replcate with a random value
+
+        if (timeout > 0) {
+            timeout *= 1000;
+        } else {
+            timeout = false;
+        }
+        
+        var readyTemplate = '<div class="noty_message pop-activity ';
+
+        // remove the custom style if it's already added
+        if ($('#customStyleTag').length > 0) {
+            $('#customStyleTag').remove();
+        }
+
+        if (template == 'custom-style') {
+            // Add the css style
+            var style = $("<style />", {
+                id: 'customStyleTag',
+                type: 'text/css',
+                html: ".noty_message.pop-activity.custom-style{ width:" + widthPopup + "px !important; height:" + heightPopup + "px !important; background:" + backgroundColor + " !important; border-color:" + borderColor + "!important } .noty_text h3 { color:" +  titleColor + " !important; } .noty_bar.noty_type_alert, #noty_center_layout_container, li.animated { width: auto !important; }"
+            }).appendTo("head");
+
+            readyTemplate += 'custom-style">';
+        } else {
+            readyTemplate += template + '">';
+        }
+
+        if (showIcon == 1 && typeOfIcon === 'p') {
+            readyTemplate += '<div class="icon"><i class="fa ' + icon + '"></i></div><div class="noty_text"></div><div class="noty_close">test</div></div>'
+        } else if (showIcon == 1 && typeOfIcon == 'u'){
+            readyTemplate += '<div class="image"><img src="' + image + '"></div><div class="noty_text"></div><div class="noty_close">test</div></div>'
+        } else {
+            readyTemplate += '<div class="noty_text"></div><div class="noty_close">test</div></div>'
+        }
+
+        var n = noty({
+            text        : '<h3>' + title + '</h3><p>' + description + '</p>',
+            dismissQueue: true,
+            layout      : position,
+            closeWith   : ['click'],
+            theme       : 'smartNotifications',
+            timeout     : timeout,
+            template    : readyTemplate,
+            maxVisible  : 10,
+            animation   : {
+                open  : 'animated ' + open_animation,
+                close : 'animated ' + close_animation,
+                easing: 'swing',
+                speed : 1500
+            }
+        });
+    };
+</script>
+<style type="text/css">
+    .colorpicker-2x .colorpicker-saturation {
+        width: 200px;
+        height: 200px;
+    }
+
+    .colorpicker-2x .colorpicker-hue,
+    .colorpicker-2x .colorpicker-alpha {
+        width: 30px;
+        height: 200px;
+    }
+
+    .colorpicker-2x .colorpicker-color,
+    .colorpicker-2x .colorpicker-color div {
+        height: 30px;
+    }
+</style>

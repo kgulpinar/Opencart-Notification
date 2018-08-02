@@ -1,0 +1,100 @@
+{{ header }}
+{{ column_left }}
+<div id="content" class="SmartNotifications">
+<script type="text/javascript">
+        NProgress.configure({
+            showSpinner: false,
+            ease: 'ease',
+            speed: 500,
+            trickleRate: 0.2,
+            trickleSpeed: 200 
+        });
+    </script>
+    <div class="page-header">
+        <div class="container-fluid">
+          <h1>{{ heading_title }}</h1>
+          <ul class="breadcrumb">
+            {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href}}">{{ breadcrumb.text }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if licensed_on is not empty %}
+            {{ licensed_on }}
+        {% endif %}
+        {% if error_warning is not empty %}
+            <div class="alert alert-danger autoSlideUp"><i class="fa fa-exclamation-circle"></i>
+                {{ error_warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success is not empty %}
+            <div class="alert alert-success autoSlideUp"><i class="fa fa-check-circle"></i>
+                {{ success }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+            <script>$('.autoSlideUp').delay(3000).fadeOut(600, function(){ $(this).show().css({'visibility':'hidden'}); }).slideUp(600);</script>
+        {% endif %}   
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-list"></i>&nbsp;<span style="vertical-align:middle;font-weight:bold;">Module settings</span></h3>
+                <div class="storeSwitcherWidget">
+                    <div>
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ store.name }} {% if store.store_id == 0 %} {{ "<strong>(#{ text_default })</strong>" }} {% endif %}&nbsp;<span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button>
+                        <ul class="dropdown-menu" role="menu">
+                            {% for store in stores %}
+                                <li><a href="index.php?route={{ module_path }}&store_id={{ store.store_id }}&user_token={{ user_token }}">{{ store.name }}</a></li>
+                            {% endfor %} 
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form"> 
+                    <input type="hidden" name="store_id" value="{{ store.store_id }}" />
+                    <input type="hidden" name="module_{{ module_name }}_status" value="1" />
+                    <div class="tabbable">
+                        <div class="tab-navigation form-inline">
+                            <ul class="nav nav-tabs mainMenuTabs">
+                                <li><a href="#control_panel" data-toggle="tab"><i class="fa fa-power-off"></i>&nbsp;Control Panel</a></li>
+                                <li><a href="#isense-support" role="tab" data-toggle="tab"><i class="fa fa-external-link"></i>&nbsp;Support</a></li>
+                            </ul>
+                            <div class="tab-buttons">
+                                <button type="submit" class="btn btn-success save-changes"><i class="fa fa-check"></i>&nbsp;{{ save_changes }}</button>
+                                <a onclick="location = '{{ cancel }}'" class="btn btn-warning"><i class="fa fa-times"></i>&nbsp;{{ button_cancel }}</a>
+                            </div> 
+                        </div><!-- /.tab-navigation --> 
+                        <div class="tab-content">
+                            <div id="control_panel" class="tab-pane fade">{% include(module_path ~ '/tab_controlpanel.twig') %}</div>
+                            <div id="isense-support" class="tab-pane">{% include(module_path ~ '/tab_support.twig') %}</div>
+                        </div> <!-- /.tab-content --> 
+                    </div><!-- /.tabbable -->
+                </form>
+            </div> 
+        </div>
+    </div>
+</div>
+{{ footer }}
+<script type="text/javascript">
+    $('.mainMenuTabs a:first').tab('show'); // Select first tab
+    $('.popup-list').children().last().children('a').click();
+    if (window.localStorage && window.localStorage['currentTab']) {
+        $('.mainMenuTabs a[href="'+window.localStorage['currentTab']+'"]').tab('show');
+    }
+    if (window.localStorage && window.localStorage['currentSubTab']) {
+        $('a[href="'+window.localStorage['currentSubTab']+'"]').tab('show');
+    }
+    $('.fadeInOnLoad').css('visibility','visible');
+    $('.mainMenuTabs a[data-toggle="tab"]').click(function() {
+        if (window.localStorage) {
+            window.localStorage['currentTab'] = $(this).attr('href');
+        }
+    });
+    $('a[data-toggle="tab"]:not(.mainMenuTabs a[data-toggle="tab"], .popup_tabs a[data-toggle="tab"])').click(function() {
+        if (window.localStorage) {
+            window.localStorage['currentSubTab'] = $(this).attr('href');
+        }
+    });
+</script>
